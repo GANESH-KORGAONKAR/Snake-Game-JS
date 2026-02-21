@@ -12,7 +12,7 @@ body {
 
 :root {
     /* background colors  */
-    --bg-primary-color: #2c2c2c;
+    --bg-primary-color: #303030;
 
     /* text colors */
     --text-primary-color: #e4e4e4;
@@ -27,7 +27,8 @@ body {
     --space-pxl: 48px;
 
     /* border color */
-    --border-color: #444;
+    --border-primary-color: #727272;
+    --border-scondary-color: #555555;
 
     /* border radius */
     --border-radius-xs: 4px;
@@ -52,6 +53,9 @@ section {
 
 section {
     padding: var(--space-2xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
 }
 
 section .infos {
@@ -62,5 +66,21 @@ section .infos {
 
 section .infos .info {
     padding: var(--space-sm) var(--space-md);
-    border: 2px solid var(--border-color);
+    border: 2px solid var(--border-primary-color);
+    border-radius: var(--border-radius-sm);
+}
+
+.board {
+    flex-grow: 1;
+    border: 2px solid var(--border-primary-color);
+    /* border-radius: var(--border-radius-md); */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
+    grid-template-rows: repeat(auto-fill, minmax(30px, 1fr));
+}
+
+.block {
+    height: 30px;
+    width: 30px;
+    border: 1px solid var(--border-scondary-color);
 }

@@ -1,4 +1,9 @@
 const board = document.querySelector(".board");
+const startBtn = document.querySelector(".start-btn");
+const restartBtn = document.querySelector(".restart-btn");
+const modal = document.querySelector(".modal");
+const gameStartModal = document.querySelector(".start-game");
+const gameOverModal = document.querySelector(".game-over");
 
 const blockHeight = 30;
 const blockWidth = 30;
@@ -7,13 +12,13 @@ const cols = Math.floor(board.clientWidth / blockWidth);
 const rows = Math.floor(board.clientHeight / blockHeight);
 
 const blocks = [];
-const snake = [
+let directions = "right";
+let intevalId = null;
+let snake = [
   { x: 2, y: 5 },
   { x: 2, y: 4 },
   { x: 2, y: 3 },
 ];
-let directions = "right";
-let intevalId = null;
 let food = {
   x: Math.floor(Math.random() * rows),
   y: Math.floor(Math.random() * cols),
@@ -49,21 +54,26 @@ function render() {
   }
 
   // game over logic
- function gameOver() {
-  alert("Game Over!");
-  clearInterval(intevalId);
-}
-// wall collision and self collision logic
-if (
-  head.x < 0 ||
-  head.x >= rows ||
-  head.y < 0 ||
-  head.y >= cols ||
-  snake.some(segment => segment.x === head.x && segment.y === head.y)
-) {
-  gameOver();
-  return;
-}
+  function gameOver() {
+    // alert("Game Over!");// for testing
+    clearInterval(intevalId);
+  }
+  // wall collision and self collision logic
+  if (
+    head.x < 0 ||
+    head.x >= rows ||
+    head.y < 0 ||
+    head.y >= cols ||
+    snake.some((segment) => segment.x === head.x && segment.y === head.y)
+  ) {
+    gameOver();
+
+    modal.style.display = "flex";
+    gameStartModal.style.display = "none";
+    gameOverModal.style.display = "flex";
+
+    return;
+  }
 
   // food eating logic
   if (head.x === food.x && head.y === food.y) {
@@ -94,9 +104,40 @@ if (
   });
 }
 
-intevalId = setInterval(() => {
-  render();
-}, 200);
+startBtn.addEventListener("click", () => {
+  modal.style.display = "none";
+  intevalId = setInterval(() => {
+    render();
+  }, 300);
+});
+
+restartBtn.addEventListener("click", restartGame);
+
+function restartGame() {
+
+  // Clear the food and snake from the previous game
+blocks[`${food.x}-${food.y}`].classList.remove("food");
+snake.forEach((segment) => {
+  const block = blocks[`${segment.x}-${segment.y}`];
+  block.classList.remove("snake");
+});
+
+// remove the game over modal and restart the game
+  modal.style.display = "none";
+  directions = "right";
+  snake = [
+    { x: 2, y: 5 },
+    { x: 2, y: 4 },
+    { x: 2, y: 3 },
+  ];
+  food = {
+    x: Math.floor(Math.random() * rows),
+    y: Math.floor(Math.random() * cols),
+  };
+  intevalId = setInterval(() => {
+    render();
+  }, 300);
+}
 
 document.addEventListener("keydown", (event) => {
   // console.log(event.key); // for testing

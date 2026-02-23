@@ -13,11 +13,18 @@ body {
 :root {
     /* background colors  */
     --bg-primary-color: #303030;
-    --bg-fill-color: #b4cf94;
-    --bg-food-color: #cfbd1a;
+    --bg-secondary-color: #0B0E14;
+    --bg-fill-color: #39FF14;
+    --bg-food-color: #ef233c;
+    --bg-start-btn-color: #64e24d;
+    --bg-restart-btn-color: #2fc2ae;
+
 
     /* text colors */
     --text-primary-color: #e4e4e4;
+    --text-secondary-color: #bbbbbb;
+    --text-tertiary-color:  #000000;
+    --text-game-over-color: #ef233c;
 
     /* spacing variables */
     --space-xs: 4px;
@@ -51,6 +58,23 @@ main,
 section {
     height: 100%;
     width: 100%;
+}
+
+.btn {
+    padding: var(--space-md) var(--space-lg);
+    border: none;
+    border-radius: var(--border-radius-sm);
+    color: var(--text-tertiary-color);
+    font-size: minmax(16px, 1.5vw);
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: ease 0.3s;
+    /* width: fit-content; */
+}
+
+.btn:hover {
+    scale: 1.1;
 }
 
 section {
@@ -93,4 +117,69 @@ section .infos .info {
 
 .food {
     background-color: var(--bg-food-color);
-}   
+}
+
+.modal {
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal .start-game ,
+.modal .game-over {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-lg);
+
+}
+
+.start-game h1 {
+    font-size: minmax(24px, 3vw);
+    text-transform: uppercase;
+}
+
+.start-game h3 {
+    font-size: minmax(16px, 1.5vw);
+    color: var(--text-secondary-color);
+}
+
+.start-game h4{
+    font-size: minmax(18px, 2vw);
+    text-decoration: underline;
+}
+
+.start-game p {
+    font-size: minmax(14px, 1.2vw);
+    color: var(--text-secondary-color);
+}
+
+
+.start-btn {
+    background-color: var(--bg-start-btn-color);
+}
+
+.modal .game-over {
+    display: none;
+}
+.game-over h1 {
+    font-size: minmax(24px, 3vw);
+    text-transform: uppercase;
+    color: var(--text-game-over-color);
+}
+
+.game-over h3 {
+    font-size: minmax(16px, 1.5vw);
+    color: var(--text-secondary-color);
+}
+
+.restart-btn {
+    background-color: var(--bg-food-color);
+}

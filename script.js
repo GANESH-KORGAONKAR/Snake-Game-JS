@@ -14,7 +14,10 @@ const snake = [
 ];
 let directions = "right";
 let intevalId = null;
-let food = {x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols)};
+let food = {
+  x: Math.floor(Math.random() * rows),
+  y: Math.floor(Math.random() * cols),
+};
 
 // board creation logic
 for (let row = 0; row < rows; row++) {
@@ -29,11 +32,12 @@ for (let row = 0; row < rows; row++) {
 
 // render logic
 function render() {
+  let head = null;
 
-let head = null;
+  // food render logic
+  blocks[`${food.x}-${food.y}`].classList.add("food");
 
-blocks[`${food.x}-${food.y}`].classList.add("food");
-
+  // head render logic
   if (directions === "right") {
     head = { x: snake[0].x, y: snake[0].y + 1 };
   } else if (directions === "down") {
@@ -44,15 +48,25 @@ blocks[`${food.x}-${food.y}`].classList.add("food");
     head = { x: snake[0].x - 1, y: snake[0].y };
   }
 
-  if (
-    head.x < 0 ||
-    head.x >= rows ||
-    head.y < 0 ||
-    head.y >= cols
-  ) {
+  // game over logic
+  if (head.x < 0 || head.x >= rows || head.y < 0 || head.y >= cols) {
     alert("Game Over!");
     clearInterval(intevalId);
-  } 
+  }
+
+  // food eating logic
+  if (head.x === food.x && head.y === food.y) {
+    blocks[`${food.x}-${food.y}`].classList.remove("food");
+
+    food = {
+      x: Math.floor(Math.random() * rows),
+      y: Math.floor(Math.random() * cols),
+    };
+
+    blocks[`${food.x}-${food.y}`].classList.add("food");
+
+    snake.unshift(head);
+  }
 
   snake.forEach((segment) => {
     const block = blocks[`${segment.x}-${segment.y}`];
@@ -69,9 +83,9 @@ blocks[`${food.x}-${food.y}`].classList.add("food");
   });
 }
 
-// intevalId = setInterval(() => {
-//   render();
-// }, 500);
+intevalId = setInterval(() => {
+  render();
+}, 200);
 
 document.addEventListener("keydown", (event) => {
   // console.log(event.key); // for testing

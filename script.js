@@ -37,7 +37,7 @@ function render() {
   // food render logic
   blocks[`${food.x}-${food.y}`].classList.add("food");
 
-  // head render logic
+  // head directions logic
   if (directions === "right") {
     head = { x: snake[0].x, y: snake[0].y + 1 };
   } else if (directions === "down") {
@@ -49,10 +49,21 @@ function render() {
   }
 
   // game over logic
-  if (head.x < 0 || head.x >= rows || head.y < 0 || head.y >= cols) {
-    alert("Game Over!");
-    clearInterval(intevalId);
-  }
+ function gameOver() {
+  alert("Game Over!");
+  clearInterval(intevalId);
+}
+// wall collision and self collision logic
+if (
+  head.x < 0 ||
+  head.x >= rows ||
+  head.y < 0 ||
+  head.y >= cols ||
+  snake.some(segment => segment.x === head.x && segment.y === head.y)
+) {
+  gameOver();
+  return;
+}
 
   // food eating logic
   if (head.x === food.x && head.y === food.y) {

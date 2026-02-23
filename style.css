@@ -13,6 +13,8 @@ body {
 :root {
     /* background colors  */
     --bg-primary-color: #303030;
+    --bg-fill-color: #b4cf94;
+    --bg-food-color: #cfbd1a;
 
     /* text colors */
     --text-primary-color: #e4e4e4;
@@ -84,3 +86,11 @@ section .infos .info {
     width: 30px;
     border: 1px solid var(--border-scondary-color);
 }
+
+.snake {
+    background-color: var(--bg-fill-color);
+}
+
+.food {
+    background-color: var(--bg-food-color);
+}   

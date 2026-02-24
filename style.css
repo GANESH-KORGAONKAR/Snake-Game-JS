@@ -71,7 +71,14 @@ section {
     font-weight: 600;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: transform 0.3s ease;
+}
+
+/* ONLY apply hover effects for mouse users */
+@media (hover: hover) {
+    .btn:hover {
+        transform: scale(1.1);
+        transition: transform 0.3s ease;
+    }
 }
 
 .btn:hover {

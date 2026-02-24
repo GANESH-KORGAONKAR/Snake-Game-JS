@@ -27,6 +27,9 @@ const btnDown = document.querySelector(".down");
 const btnLeft = document.querySelector(".left");
 const btnRight = document.querySelector(".right");
 
+let startX = 0;
+let startY = 0;
+
 let intevalId = null;
 let timeIntervalId = null;
 
@@ -187,6 +190,7 @@ highScoreElement.innerText = highScore;
     render();
   }, 300);
 
+  // reset the time interval
   timeIntervalId = setInterval(() => {
     let [min , sec] = time.split("-").map(Number);
 
@@ -248,3 +252,42 @@ btnLeft.addEventListener("click", () => {
   // console.log("left"); // for testing
 });
 
+// swipe controls logic
+document.addEventListener("touchstart", (e) => {
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+});
+
+document.addEventListener("touchend", (e) => {
+  let endX = e.changedTouches[0].clientX;
+  let endY = e.changedTouches[0].clientY;
+
+  let diffX = endX - startX;
+  let diffY = endY - startY;
+
+  // Ignore very small swipes
+  if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
+
+  if (Math.abs(diffX) > Math.abs(diffY)) {
+  if (diffX > 0) {
+    directions = "right";
+  } else {
+    directions = "left";
+  }
+} else {
+  if (diffY > 0) {
+    directions = "down";
+  } else {
+    directions = "up";
+  }
+}
+});
+
+function setDirection(newDirection) {
+  if (directions === "up" && newDirection === "down") return;
+  if (directions === "down" && newDirection === "up") return;
+  if (directions === "left" && newDirection === "right") return;
+  if (directions === "right" && newDirection === "left") return;
+
+  directions = newDirection;
+}

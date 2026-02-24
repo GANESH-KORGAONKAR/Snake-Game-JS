@@ -109,6 +109,7 @@ section .infos .info {
     height: 30px;
     width: 30px;
     border: 1px solid var(--border-scondary-color);
+    border-radius: 30%;  /* to make it circular */
 }
 
 .snake {

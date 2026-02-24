@@ -4,6 +4,9 @@ const restartBtn = document.querySelector(".restart-btn");
 const modal = document.querySelector(".modal");
 const gameStartModal = document.querySelector(".start-game");
 const gameOverModal = document.querySelector(".game-over");
+const scoreElement = document.querySelector("#score");
+const highScoreElement = document.querySelector("#high-score");
+const timeElement = document.querySelector("#time");
 
 const blockHeight = 30;
 const blockWidth = 30;
@@ -11,9 +14,17 @@ const blockWidth = 30;
 const cols = Math.floor(board.clientWidth / blockWidth);
 const rows = Math.floor(board.clientHeight / blockHeight);
 
+let score = 0;
+let highScore = localStorage.getItem("highScore") || 0;
+highScoreElement.innerText = highScore;
+let time = "00-00";
+
 const blocks = [];
 let directions = "right";
+
 let intevalId = null;
+let timeIntervalId = null;
+
 let snake = [
   { x: 2, y: 5 },
   { x: 2, y: 4 },
@@ -57,6 +68,7 @@ function render() {
   function gameOver() {
     // alert("Game Over!");// for testing
     clearInterval(intevalId);
+    clearInterval(timeIntervalId);
   }
   // wall collision and self collision logic
   if (
@@ -87,6 +99,14 @@ function render() {
     blocks[`${food.x}-${food.y}`].classList.add("food");
 
     snake.unshift(head);
+
+    score += 1;
+    scoreElement.innerText = score;
+
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem("highScore", highScore.toString());
+    }
   }
 
   snake.forEach((segment) => {
@@ -109,6 +129,19 @@ startBtn.addEventListener("click", () => {
   intevalId = setInterval(() => {
     render();
   }, 300);
+
+  timeIntervalId = setInterval(() => {
+    let [min , sec] = time.split("-").map(Number);
+
+    if(sec === 59){
+      min += 1;
+      sec = 0;
+    }else{
+      sec += 1;
+    }
+    time = `${min}-${sec}`;
+    timeElement.innerText = time;
+  }, 1000);
 });
 
 restartBtn.addEventListener("click", restartGame);
@@ -122,6 +155,14 @@ snake.forEach((segment) => {
   block.classList.remove("snake");
 });
 
+// reset the score, time and high score if necessary
+score = 0;
+time = "00-00";
+
+scoreElement.innerText = score;
+timeElement.innerText = time;
+highScoreElement.innerText = highScore;
+
 // remove the game over modal and restart the game
   modal.style.display = "none";
   directions = "right";
@@ -130,13 +171,28 @@ snake.forEach((segment) => {
     { x: 2, y: 4 },
     { x: 2, y: 3 },
   ];
+
   food = {
     x: Math.floor(Math.random() * rows),
     y: Math.floor(Math.random() * cols),
   };
+
   intevalId = setInterval(() => {
     render();
   }, 300);
+
+  timeIntervalId = setInterval(() => {
+    let [min , sec] = time.split("-").map(Number);
+
+    if(sec === 59){
+      min += 1;
+      sec = 0;
+    }else{
+      sec += 1;
+    }
+    time = `${min}-${sec}`;
+    timeElement.innerText = time;
+  }, 1000);
 }
 
 document.addEventListener("keydown", (event) => {

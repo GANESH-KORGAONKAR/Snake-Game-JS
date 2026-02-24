@@ -8,6 +8,7 @@ html,
 body {
     height: 100%;
     width: 100%;
+    overscroll-behavior: none;
 }
 
 :root {
@@ -126,6 +127,7 @@ section .infos .info {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
     grid-template-rows: repeat(auto-fill, minmax(30px, 1fr));
+    touch-action: none; /* prevent default touch actions like scrolling */
 }
 
 .mobile-controls {

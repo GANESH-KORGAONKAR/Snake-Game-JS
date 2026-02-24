@@ -126,7 +126,6 @@ section .infos .info {
     justify-content: center;
     align-items: center;
     gap: var(--space-sm);
-    background-color: #39FF14;
 }
 
 .up-down {

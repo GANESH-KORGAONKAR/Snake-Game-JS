@@ -253,42 +253,41 @@ btnLeft.addEventListener("click", () => {
 });
 
 // swipe controls logic
-board.addEventListener(
-  "touchstart",
-  (e) => {
-    e.preventDefault(); // stop pull-to-refresh
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-  },
-  { passive: false }
-);
+document.addEventListener("touchstart", (e) => {
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+});
 
-board.addEventListener(
-  "touchend",
-  (e) => {
-    e.preventDefault(); // stop refresh
+document.addEventListener("touchend", (e) => {
+  let endX = e.changedTouches[0].clientX;
+  let endY = e.changedTouches[0].clientY;
 
-    let endX = e.changedTouches[0].clientX;
-    let endY = e.changedTouches[0].clientY;
+  let diffX = endX - startX;
+  let diffY = endY - startY;
 
-    let diffX = endX - startX;
-    let diffY = endY - startY;
+  // Ignore very small swipes
+  if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
 
-    if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
+  if (Math.abs(diffX) > Math.abs(diffY)) {
+  if (diffX > 0) {
+    directions = "right";
+  } else {
+    directions = "left";
+  }
+} else {
+  if (diffY > 0) {
+    directions = "down";
+  } else {
+    directions = "up";
+  }
+}
+});
 
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-      if (diffX > 0) {
-        setDirection("right");
-      } else {
-        setDirection("left");
-      }
-    } else {
-      if (diffY > 0) {
-        setDirection("down");
-      } else {
-        setDirection("up");
-      }
-    }
-  },
-  { passive: false }
-);
+function setDirection(newDirection) {
+  if (directions === "up" && newDirection === "down") return;
+  if (directions === "down" && newDirection === "up") return;
+  if (directions === "left" && newDirection === "right") return;
+  if (directions === "right" && newDirection === "left") return;
+
+  directions = newDirection;
+}

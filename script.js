@@ -20,7 +20,7 @@ highScoreElement.innerText = highScore;
 let time = "00-00";
 
 const blocks = [];
-let directions = "right";
+let directions = "right"; // initial direction of the snake
 
 let intevalId = null;
 let timeIntervalId = null;
@@ -30,6 +30,7 @@ let snake = [
   { x: 2, y: 4 },
   { x: 2, y: 3 },
 ];
+
 let food = {
   x: Math.floor(Math.random() * rows),
   y: Math.floor(Math.random() * cols),
@@ -195,6 +196,7 @@ highScoreElement.innerText = highScore;
   }, 1000);
 }
 
+// saanke direction control logic
 document.addEventListener("keydown", (event) => {
   // console.log(event.key); // for testing
   if (event.key === "ArrowUp" || event.key === "w" || event.key === "8") {

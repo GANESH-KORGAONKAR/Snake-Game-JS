@@ -17,13 +17,14 @@ body {
     --bg-fill-color: #39FF14;
     --bg-food-color: #ef233c;
     --bg-start-btn-color: #64e24d;
-    --bg-restart-btn-color: #2fc2ae;
+    --bg-primary-mobile-btn-color: #a7c957;
+    --bg-secondary-mobile-btn-color: #386641;
 
 
     /* text colors */
     --text-primary-color: #e4e4e4;
     --text-secondary-color: #bbbbbb;
-    --text-tertiary-color:  #000000;
+    --text-tertiary-color: #000000;
     --text-game-over-color: #ef233c;
 
     /* spacing variables */
@@ -38,6 +39,7 @@ body {
     /* border color */
     --border-primary-color: #727272;
     --border-scondary-color: #555555;
+    --border-tertiary-color: #0a0a0a;
 
     /* border radius */
     --border-radius-xs: 4px;
@@ -65,16 +67,29 @@ section {
     border: none;
     border-radius: var(--border-radius-sm);
     color: var(--text-tertiary-color);
-    font-size: minmax(16px, 1.5vw);
+    font-size: clamp(16px, 1.5vw, 20px);
     font-weight: 600;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: ease 0.3s;
-    /* width: fit-content; */
+    transition: transform 0.3s ease;
 }
 
 .btn:hover {
-    scale: 1.1;
+    transform: scale(1.1);
+}
+
+.mobile-btn {
+    font-weight: 900;
+    background-color: var(--bg-primary-mobile-btn-color);
+    border: 2px solid var(--border-tertiary-color);
+}
+
+.mobile-btn:active {
+    background-color: var(--bg-secondary-mobile-btn-color);
+}
+
+.mobile-btn i {
+    font-size: clamp(24px, 3vw, 40px);
 }
 
 section {
@@ -105,11 +120,19 @@ section .infos .info {
     grid-template-rows: repeat(auto-fill, minmax(30px, 1fr));
 }
 
+.mobile-controls {
+    display: none;
+    /* Hide on desktop */
+    justify-content: center;
+    gap: var(--space-lg);
+}
+
 .block {
     height: 30px;
     width: 30px;
     border: 1px solid var(--border-scondary-color);
-    border-radius: 30%;  /* to make it circular */
+    border-radius: 30%;
+    /* to make it circular */
 }
 
 .snake {
@@ -132,7 +155,7 @@ section .infos .info {
     align-items: center;
 }
 
-.modal .start-game ,
+.modal .start-game,
 .modal .game-over {
     display: flex;
     flex-direction: column;
@@ -152,7 +175,7 @@ section .infos .info {
     color: var(--text-secondary-color);
 }
 
-.start-game h4{
+.start-game h4 {
     font-size: minmax(18px, 2vw);
     text-decoration: underline;
 }
@@ -170,6 +193,7 @@ section .infos .info {
 .modal .game-over {
     display: none;
 }
+
 .game-over h1 {
     font-size: minmax(24px, 3vw);
     text-transform: uppercase;
@@ -183,4 +207,12 @@ section .infos .info {
 
 .restart-btn {
     background-color: var(--bg-food-color);
+}
+
+/* Show mobile buttons on touch devices only (screen size ≤ 768px) */
+@media (max-width: 768px) {
+    .mobile-controls {
+        display: flex;
+        /* Display on mobile */
+    }
 }

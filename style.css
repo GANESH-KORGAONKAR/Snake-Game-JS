@@ -94,7 +94,7 @@ section {
 }
 
 section {
-    padding: var(--space-2xl);
+    padding: var(--space-xl);
     display: flex;
     flex-direction: column;
     gap: var(--space-lg);
@@ -124,7 +124,15 @@ section .infos .info {
 .mobile-controls {
     display: none;
     justify-content: center;
-    gap: var(--space-lg);
+    align-items: center;
+    gap: var(--space-sm);
+    background-color: #39FF14;
+}
+
+.up-down {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
 }
 
 .block {

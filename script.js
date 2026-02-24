@@ -227,6 +227,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+// mobile controls logic
 btnUp.addEventListener("click", () => {
   directions = "up";
   // console.log("up"); // for testing

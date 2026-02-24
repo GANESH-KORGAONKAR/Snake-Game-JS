@@ -22,6 +22,18 @@ let time = "00-00";
 const blocks = [];
 let directions = "right"; // initial direction of the snake
 
+const btnUp = document.querySelector(".up");
+const btnDown = document.querySelector(".down");
+const btnLeft = document.querySelector(".left");
+const btnRight = document.querySelector(".right");
+
+// Check if the device supports touch events
+const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+// If it's not a touch device, hide the mobile controls
+if (!isTouch) {
+  document.querySelector(".mobile-controls").style.display = "none";
+}
+
 let intevalId = null;
 let timeIntervalId = null;
 
@@ -221,3 +233,24 @@ document.addEventListener("keydown", (event) => {
     directions = "left";
   }
 });
+
+btnUp.addEventListener("click", () => {
+  directions = "up";
+  // console.log("up"); // for testing
+});
+
+btnRight.addEventListener("click", () => {
+  directions = "right";
+  // console.log("right"); // for testing
+});
+
+btnDown.addEventListener("click", () => {
+  directions = "down";
+  // console.log("down"); // for testing
+});
+
+btnLeft.addEventListener("click", () => {
+  directions = "left";
+  // console.log("left"); // for testing
+});
+

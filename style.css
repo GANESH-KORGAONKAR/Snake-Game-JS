@@ -18,7 +18,7 @@ body {
     --bg-food-color: #ef233c;
     --bg-start-btn-color: #64e24d;
     --bg-primary-mobile-btn-color: #a7c957;
-    --bg-secondary-mobile-btn-color: #386641;
+    --bg-secondary-mobile-btn-color: #01fd33;
 
 
     /* text colors */
@@ -86,6 +86,7 @@ section {
 
 .mobile-btn:active {
     background-color: var(--bg-secondary-mobile-btn-color);
+    transition: transform 0.3s ease;
 }
 
 .mobile-btn i {

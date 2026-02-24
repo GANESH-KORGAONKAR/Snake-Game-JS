@@ -27,13 +27,6 @@ const btnDown = document.querySelector(".down");
 const btnLeft = document.querySelector(".left");
 const btnRight = document.querySelector(".right");
 
-// Check if the device supports touch events
-const isTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-// If it's not a touch device, hide the mobile controls
-if (!isTouch) {
-  document.querySelector(".mobile-controls").style.display = "none";
-}
-
 let intevalId = null;
 let timeIntervalId = null;
 

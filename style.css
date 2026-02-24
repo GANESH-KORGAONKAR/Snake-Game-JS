@@ -123,7 +123,6 @@ section .infos .info {
 
 .mobile-controls {
     display: none;
-    /* Hide on desktop */
     justify-content: center;
     gap: var(--space-lg);
 }
@@ -211,9 +210,8 @@ section .infos .info {
 }
 
 /* Show mobile buttons on touch devices only (screen size ≤ 768px) */
-@media (max-width: 768px) {
+@media (max-width: 800px) {
     .mobile-controls {
         display: flex;
-        /* Display on mobile */
     }
 }

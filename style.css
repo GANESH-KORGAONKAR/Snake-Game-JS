@@ -13,6 +13,7 @@ body {
 
 :root {
     /* background colors  */
+    --bg-color: #81818170;
     --bg-primary-color: #303030;
     --bg-secondary-color: #0B0E14;
     --bg-head-color: #075700;
@@ -211,6 +212,27 @@ section .infos .info {
 .start-game p {
     font-size: minmax(14px, 1.2vw);
     color: var(--text-secondary-color);
+}
+
+.levels {
+    display: flex;
+    gap: var(--space-2xl);
+    padding: var(--space-lg);
+}
+
+.levels .easy {
+    background-color: var(--bg-easy-level-color);
+    border: 2px solid var(--border-easy-level-color);
+}
+
+.levels .medium {
+    background-color: var(--bg-medium-level-color);
+    border: 2px solid var(--border-medium-level-color);
+}
+
+.levels .hard {
+    background-color: var(--bg-hard-level-color);
+    border: 2px solid var(--border-hard-level-color);
 }
 
 .start-btn {

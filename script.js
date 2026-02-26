@@ -8,6 +8,10 @@ const scoreElement = document.querySelector("#score");
 const highScoreElement = document.querySelector("#high-score");
 const timeElement = document.querySelector("#time");
 
+const easyLevelBtn = document.querySelector(".easy");
+const mediumLevelBtn = document.querySelector(".medium");
+const hardLevelBtn = document.querySelector(".hard");
+
 const blockHeight = 30;
 const blockWidth = 30;
 
@@ -31,6 +35,7 @@ const btnRight = document.querySelector(".right");
 let startX = 0;
 let startY = 0;
 
+let gameSpeed = 300; // default EASY speed
 let intervalId = null;
 let timeIntervalId = null;
 
@@ -60,6 +65,30 @@ for (let row = 0; row < rows; row++) {
     blocks[`${row}-${col}`] = block;
   }
 }
+
+// EASY (default)
+easyLevelBtn.addEventListener("click", () => {
+  easyLevelBtn.style.backgroundColor = "var(--border-easy-level-color)";
+  mediumLevelBtn.style.backgroundColor = "var(--bg-color)";
+  hardLevelBtn.style.backgroundColor = "var(--bg-color)";
+  gameSpeed = 300;
+});
+
+// MEDIUM
+mediumLevelBtn.addEventListener("click", () => {
+  mediumLevelBtn.style.backgroundColor = "var(--border-medium-level-color)";
+  easyLevelBtn.style.backgroundColor = "var(--bg-color)";
+  hardLevelBtn.style.backgroundColor = "var(--bg-color)";
+  gameSpeed = 200;
+});
+
+// HARD
+hardLevelBtn.addEventListener("click", () => {
+  hardLevelBtn.style.backgroundColor = "var(--border-hard-level-color)";
+  easyLevelBtn.style.backgroundColor = "var(--bg-color)";
+  mediumLevelBtn.style.backgroundColor = "var(--bg-color)";
+  gameSpeed = 100;
+});
 
 // render logic
 function render() {
@@ -153,12 +182,13 @@ function render() {
 
     snake.unshift(head);
 
-    streak += 1; 
-    score += 1; 
+    streak += 1;
+    score += 1;
+
     // Bonus every 10 consecutive foods
     if (streak % 10 === 0) {
       score += 5; // bonus points
-    } 
+    }
 
     scoreElement.innerText = score;
 
@@ -187,7 +217,7 @@ startBtn.addEventListener("click", () => {
   modal.style.display = "none";
   intervalId = setInterval(() => {
     render();
-  }, 300);
+  }, gameSpeed);
 
   timeIntervalId = setInterval(() => {
     let [min, sec] = time.split(":").map(Number);
@@ -212,6 +242,7 @@ restartBtn.addEventListener("click", restartGame);
 function restartGame() {
   // Clear the food and snake from the previous game
   blocks[`${food.x}-${food.y}`].classList.remove("food");
+
   snake.forEach((segment) => {
     const block = blocks[`${segment.x}-${segment.y}`];
     block.classList.remove("snake");
@@ -248,11 +279,11 @@ function restartGame() {
 
   intervalId = setInterval(() => {
     render();
-  }, 300);
+  }, gameSpeed);
 
   // reset the time interval
   timeIntervalId = setInterval(() => {
-    let [min, sec] = time.split("-").map(Number);
+    let [min, sec] = time.split(":").map(Number);
 
     if (sec === 59) {
       min += 1;
@@ -260,7 +291,11 @@ function restartGame() {
     } else {
       sec += 1;
     }
-    time = `${min}-${sec}`;
+
+    const formattedMin = String(min).padStart(2, "0");
+    const formattedSec = String(sec).padStart(2, "0");
+
+    time = `${formattedMin}:${formattedSec}`;
     timeElement.innerText = time;
   }, 1000);
 }

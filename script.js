@@ -35,7 +35,8 @@ const btnRight = document.querySelector(".right");
 let startX = 0;
 let startY = 0;
 
-let gameSpeed = 300; // default EASY speed
+let gameSpeed;
+let currentDifficulty = "easy"; // default
 let intervalId = null;
 let timeIntervalId = null;
 
@@ -66,29 +67,64 @@ for (let row = 0; row < rows; row++) {
   }
 }
 
-// EASY (default)
+// high score management logic
+function getHighScore() {
+  const key = `snake_highscore_${currentDifficulty}`;
+  return Number(localStorage.getItem(key)) || 0;
+}
+
+// Save high score if current score is greater than existing high score for the current difficulty level
+function saveHighScore(score) {
+  const key = `snake_highscore_${currentDifficulty}`;
+  const existing = Number(localStorage.getItem(key)) || 0;
+
+  if (score > existing) {
+    localStorage.setItem(key, score);
+  }
+}
+
+// EASY
 easyLevelBtn.addEventListener("click", () => {
-  easyLevelBtn.style.backgroundColor = "var(--border-easy-level-color)";
-  mediumLevelBtn.style.backgroundColor = "var(--bg-color)";
-  hardLevelBtn.style.backgroundColor = "var(--bg-color)";
+  currentDifficulty = "easy";
   gameSpeed = 300;
+  updateDifficultyUI();
+  updateHighScore();
 });
 
 // MEDIUM
 mediumLevelBtn.addEventListener("click", () => {
-  mediumLevelBtn.style.backgroundColor = "var(--border-medium-level-color)";
-  easyLevelBtn.style.backgroundColor = "var(--bg-color)";
-  hardLevelBtn.style.backgroundColor = "var(--bg-color)";
+  currentDifficulty = "medium";
   gameSpeed = 200;
+  updateDifficultyUI();
+  updateHighScore();
 });
 
 // HARD
 hardLevelBtn.addEventListener("click", () => {
-  hardLevelBtn.style.backgroundColor = "var(--border-hard-level-color)";
-  easyLevelBtn.style.backgroundColor = "var(--bg-color)";
-  mediumLevelBtn.style.backgroundColor = "var(--bg-color)";
+  currentDifficulty = "hard";
   gameSpeed = 100;
+  updateDifficultyUI();
+  updateHighScore();
 });
+
+function updateDifficultyUI() {
+  easyLevelBtn.style.backgroundColor =
+    currentDifficulty === "easy"
+      ? "var(--border-easy-level-color)"
+      : "var(--bg-color)";
+  mediumLevelBtn.style.backgroundColor =
+    currentDifficulty === "medium"
+      ? "var(--border-medium-level-color)"
+      : "var(--bg-color)";
+  hardLevelBtn.style.backgroundColor =
+    currentDifficulty === "hard"
+      ? "var(--border-hard-level-color)"
+      : "var(--bg-color)";
+}
+
+function updateHighScore() {
+  highScoreElement.innerText = getHighScore();
+}
 
 // render logic
 function render() {
@@ -192,9 +228,9 @@ function render() {
 
     scoreElement.innerText = score;
 
-    if (score > highScore) {
-      highScore = score;
-      localStorage.setItem("highScore", highScore.toString());
+    if (score > getHighScore()) {
+      saveHighScore(score);
+      updateHighScore();
     }
   }
 
@@ -277,6 +313,7 @@ function restartGame() {
 
   food = newFood;
 
+  clearInterval(intervalId);
   intervalId = setInterval(() => {
     render();
   }, gameSpeed);
@@ -298,6 +335,8 @@ function restartGame() {
     time = `${formattedMin}:${formattedSec}`;
     timeElement.innerText = time;
   }, 1000);
+
+  updateHighScore() 
 }
 
 // saanke direction control logic

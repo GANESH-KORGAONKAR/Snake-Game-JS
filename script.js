@@ -18,6 +18,7 @@ let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 highScoreElement.innerText = highScore;
 let time = "00:00";
+let streak = 0; // tracks consecutive food eaten
 
 const blocks = [];
 let directions = "right"; // initial direction of the snake
@@ -66,7 +67,9 @@ function render() {
 
   // food render logic
   blocks[`${food.x}-${food.y}`].classList.add("food");
-  blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.add("dengerous-food");
+  blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.add(
+    "dengerous-food",
+  );
 
   // head directions logic
   if (directions === "right") {
@@ -106,7 +109,9 @@ function render() {
   // food consumption logic
   if (head.x === food.x && head.y === food.y) {
     blocks[`${food.x}-${food.y}`].classList.remove("food");
-    blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.remove("dengerous-food");
+    blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.remove(
+      "dengerous-food",
+    );
 
     // ensure that the new food doesn't spawn on the snake
     let newFood;
@@ -132,19 +137,29 @@ function render() {
       };
     } while (
       snake.some(
-        (segment) => segment.x === newDengerousFood.x && segment.y === newDengerousFood.y,
-      ) || (newDengerousFood.x === food.x && newDengerousFood.y === food.y)
+        (segment) =>
+          segment.x === newDengerousFood.x && segment.y === newDengerousFood.y,
+      ) ||
+      (newDengerousFood.x === food.x && newDengerousFood.y === food.y)
     );
 
     dengerousFood = newDengerousFood;
 
     // render the new food and dengerous food
     blocks[`${food.x}-${food.y}`].classList.add("food");
-    blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.add("dengerous-food");
+    blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.add(
+      "dengerous-food",
+    );
 
     snake.unshift(head);
 
-    score += 1;
+    streak += 1; 
+    score += 1; 
+    // Bonus every 10 consecutive foods
+    if (streak % 10 === 0) {
+      score += 5; // bonus points
+    } 
+
     scoreElement.innerText = score;
 
     if (score > highScore) {

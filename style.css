@@ -15,11 +15,16 @@ body {
     /* background colors  */
     --bg-primary-color: #303030;
     --bg-secondary-color: #0B0E14;
+    --bg-head-color: #075700;
     --bg-fill-color: #39FF14;
-    --bg-food-color: #ef233c;
+    --bg-food-color: #ecef23;
+    --bg-dengerous-food-color: #ff0000;
     --bg-start-btn-color: #64e24d;
     --bg-primary-mobile-btn-color: #a7c957;
     --bg-secondary-mobile-btn-color: #01fd33;
+    --bg-easy-level-color: #7ce669;
+    --bg-medium-level-color: #c3da5e;
+    --bg-hard-level-color: #eb5353;
 
 
     /* text colors */
@@ -41,6 +46,9 @@ body {
     --border-primary-color: #727272;
     --border-scondary-color: #555555;
     --border-tertiary-color: #0a0a0a;
+    --border-easy-level-color: #2bff00;
+    --border-medium-level-color: #fbff00;
+    --border-hard-level-color: #ff1414;
 
     /* border radius */
     --border-radius-xs: 4px;
@@ -127,7 +135,8 @@ section .infos .info {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(30px, 1fr));
     grid-template-rows: repeat(auto-fill, minmax(30px, 1fr));
-    touch-action: none; /* prevent default touch actions like scrolling */
+    touch-action: none;
+    /* prevent default touch actions like scrolling */
 }
 
 .mobile-controls {
@@ -148,7 +157,6 @@ section .infos .info {
     width: 30px;
     border: 1px solid var(--border-scondary-color);
     border-radius: 30%;
-    /* to make it circular */
 }
 
 .snake {
@@ -157,6 +165,10 @@ section .infos .info {
 
 .food {
     background-color: var(--bg-food-color);
+}
+
+.dengerous-food {
+    background-color: var(--bg-dengerous-food-color);
 }
 
 .modal {
@@ -201,7 +213,6 @@ section .infos .info {
     color: var(--text-secondary-color);
 }
 
-
 .start-btn {
     background-color: var(--bg-start-btn-color);
 }
@@ -222,7 +233,7 @@ section .infos .info {
 }
 
 .restart-btn {
-    background-color: var(--bg-food-color);
+    background-color: var(--bg-dengerous-food-color);
 }
 
 /* Show mobile buttons on touch devices only (screen size ≤ 768px) */

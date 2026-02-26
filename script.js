@@ -17,7 +17,7 @@ const rows = Math.floor(board.clientHeight / blockHeight);
 let score = 0;
 let highScore = localStorage.getItem("highScore") || 0;
 highScoreElement.innerText = highScore;
-let time = "00-00";
+let time = "00:00";
 
 const blocks = [];
 let directions = "right"; // initial direction of the snake
@@ -44,6 +44,11 @@ let food = {
   y: Math.floor(Math.random() * cols),
 };
 
+let dengerousFood = {
+  x: Math.floor(Math.random() * rows),
+  y: Math.floor(Math.random() * cols),
+};
+
 // board creation logic
 for (let row = 0; row < rows; row++) {
   for (let col = 0; col < cols; col++) {
@@ -61,6 +66,7 @@ function render() {
 
   // food render logic
   blocks[`${food.x}-${food.y}`].classList.add("food");
+  blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.add("dengerous-food");
 
   // head directions logic
   if (directions === "right") {
@@ -76,36 +82,65 @@ function render() {
   // game over logic
   function gameOver() {
     // alert("Game Over!");// for testing
-    clearInterval(intervalId );
+    clearInterval(intervalId);
     clearInterval(timeIntervalId);
   }
-  // wall collision and self collision logic
+
+  // wall collision and self collision logic and dengerous food collision logic
   if (
     head.x < 0 ||
     head.x >= rows ||
     head.y < 0 ||
     head.y >= cols ||
-    snake.some((segment) => segment.x === head.x && segment.y === head.y)
+    snake.some((segment) => segment.x === head.x && segment.y === head.y) ||
+    (head.x === dengerousFood.x && head.y === dengerousFood.y)
   ) {
     gameOver();
 
     modal.style.display = "flex";
     gameStartModal.style.display = "none";
     gameOverModal.style.display = "flex";
-
     return;
   }
 
-  // food eating logic
+  // food consumption logic
   if (head.x === food.x && head.y === food.y) {
     blocks[`${food.x}-${food.y}`].classList.remove("food");
+    blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.remove("dengerous-food");
 
-    food = {
-      x: Math.floor(Math.random() * rows),
-      y: Math.floor(Math.random() * cols),
-    };
+    // ensure that the new food doesn't spawn on the snake
+    let newFood;
+    do {
+      newFood = {
+        x: Math.floor(Math.random() * rows),
+        y: Math.floor(Math.random() * cols),
+      };
+    } while (
+      snake.some(
+        (segment) => segment.x === newFood.x && segment.y === newFood.y,
+      )
+    );
 
+    food = newFood;
+
+    // ensure that the new dengerous food doesn't spawn on the snake or on the food
+    let newDengerousFood;
+    do {
+      newDengerousFood = {
+        x: Math.floor(Math.random() * rows),
+        y: Math.floor(Math.random() * cols),
+      };
+    } while (
+      snake.some(
+        (segment) => segment.x === newDengerousFood.x && segment.y === newDengerousFood.y,
+      ) || (newDengerousFood.x === food.x && newDengerousFood.y === food.y)
+    );
+
+    dengerousFood = newDengerousFood;
+
+    // render the new food and dengerous food
     blocks[`${food.x}-${food.y}`].classList.add("food");
+    blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.add("dengerous-food");
 
     snake.unshift(head);
 
@@ -135,20 +170,24 @@ function render() {
 
 startBtn.addEventListener("click", () => {
   modal.style.display = "none";
-  intervalId  = setInterval(() => {
+  intervalId = setInterval(() => {
     render();
   }, 300);
 
   timeIntervalId = setInterval(() => {
-    let [min , sec] = time.split("-").map(Number);
+    let [min, sec] = time.split(":").map(Number);
 
-    if(sec === 59){
+    if (sec === 59) {
       min += 1;
       sec = 0;
-    }else{
+    } else {
       sec += 1;
     }
-    time = `${min}-${sec}`;
+
+    const formattedMin = String(min).padStart(2, "0");
+    const formattedSec = String(sec).padStart(2, "0");
+
+    time = `${formattedMin}:${formattedSec}`;
     timeElement.innerText = time;
   }, 1000);
 });
@@ -156,23 +195,22 @@ startBtn.addEventListener("click", () => {
 restartBtn.addEventListener("click", restartGame);
 
 function restartGame() {
-
   // Clear the food and snake from the previous game
-blocks[`${food.x}-${food.y}`].classList.remove("food");
-snake.forEach((segment) => {
-  const block = blocks[`${segment.x}-${segment.y}`];
-  block.classList.remove("snake");
-});
+  blocks[`${food.x}-${food.y}`].classList.remove("food");
+  snake.forEach((segment) => {
+    const block = blocks[`${segment.x}-${segment.y}`];
+    block.classList.remove("snake");
+  });
 
-// reset the score, time and high score if necessary
-score = 0;
-time = "00-00";
+  // reset the score, time and high score if necessary
+  score = 0;
+  time = "00:00";
 
-scoreElement.innerText = score;
-timeElement.innerText = time;
-highScoreElement.innerText = highScore;
+  scoreElement.innerText = score;
+  timeElement.innerText = time;
+  highScoreElement.innerText = highScore;
 
-// remove the game over modal and restart the game
+  // remove the game over modal and restart the game
   modal.style.display = "none";
   directions = "right";
   snake = [
@@ -181,23 +219,30 @@ highScoreElement.innerText = highScore;
     { x: 2, y: 3 },
   ];
 
-  food = {
-    x: Math.floor(Math.random() * rows),
-    y: Math.floor(Math.random() * cols),
-  };
+  // ensure that the new food doesn't spawn on the snake
+  do {
+    newFood = {
+      x: Math.floor(Math.random() * rows),
+      y: Math.floor(Math.random() * cols),
+    };
+  } while (
+    snake.some((segment) => segment.x === newFood.x && segment.y === newFood.y)
+  );
 
-  intervalId  = setInterval(() => {
+  food = newFood;
+
+  intervalId = setInterval(() => {
     render();
   }, 300);
 
   // reset the time interval
   timeIntervalId = setInterval(() => {
-    let [min , sec] = time.split("-").map(Number);
+    let [min, sec] = time.split("-").map(Number);
 
-    if(sec === 59){
+    if (sec === 59) {
       min += 1;
       sec = 0;
-    }else{
+    } else {
       sec += 1;
     }
     time = `${min}-${sec}`;
@@ -269,18 +314,18 @@ document.addEventListener("touchend", (e) => {
   if (Math.abs(diffX) < 30 && Math.abs(diffY) < 30) return;
 
   if (Math.abs(diffX) > Math.abs(diffY)) {
-  if (diffX > 0) {
-    directions = "right";
+    if (diffX > 0) {
+      directions = "right";
+    } else {
+      directions = "left";
+    }
   } else {
-    directions = "left";
+    if (diffY > 0) {
+      directions = "down";
+    } else {
+      directions = "up";
+    }
   }
-} else {
-  if (diffY > 0) {
-    directions = "down";
-  } else {
-    directions = "up";
-  }
-}
 });
 
 function setDirection(newDirection) {

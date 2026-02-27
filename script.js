@@ -19,12 +19,10 @@ const cols = Math.floor(board.clientWidth / blockWidth);
 const rows = Math.floor(board.clientHeight / blockHeight);
 
 let score = 0;
-let highScore = localStorage.getItem("highScore") || 0;
-highScoreElement.innerText = highScore;
 let time = "00:00";
 let streak = 0; // tracks consecutive food eaten
 
-const blocks = [];
+const blocks = {};
 let directions = "right"; // initial direction of the snake
 
 const btnUp = document.querySelector(".up");
@@ -35,8 +33,8 @@ const btnRight = document.querySelector(".right");
 let startX = 0;
 let startY = 0;
 
-let gameSpeed;
-let currentDifficulty = "easy"; // default
+let currentDifficulty = "easy";
+let gameSpeed = 300; // default easy speed
 let intervalId = null;
 let timeIntervalId = null;
 
@@ -46,15 +44,8 @@ let snake = [
   { x: 2, y: 3 },
 ];
 
-let food = {
-  x: Math.floor(Math.random() * rows),
-  y: Math.floor(Math.random() * cols),
-};
-
-let dangerousFood= {
-  x: Math.floor(Math.random() * rows),
-  y: Math.floor(Math.random() * cols),
-};
+let foods = [];
+let dangerousFoods = [];
 
 // board creation logic
 for (let row = 0; row < rows; row++) {
@@ -83,11 +74,13 @@ function saveHighScore(score) {
   }
 }
 
-// difficulty settings 
+// difficulty settings
 // EASY
 easyLevelBtn.addEventListener("click", () => {
   currentDifficulty = "easy";
   gameSpeed = 300;
+  spawnFood(1, "normal");
+  spawnFood(1, "dangerous");
   updateDifficultyUI();
   updateHighScore();
 });
@@ -96,6 +89,8 @@ easyLevelBtn.addEventListener("click", () => {
 mediumLevelBtn.addEventListener("click", () => {
   currentDifficulty = "medium";
   gameSpeed = 200;
+  spawnFood(1, "normal");
+  spawnFood(2, "dangerous");
   updateDifficultyUI();
   updateHighScore();
 });
@@ -104,6 +99,8 @@ mediumLevelBtn.addEventListener("click", () => {
 hardLevelBtn.addEventListener("click", () => {
   currentDifficulty = "hard";
   gameSpeed = 100;
+  spawnFood(1, "normal");
+  spawnFood(3, "dangerous");
   updateDifficultyUI();
   updateHighScore();
 });
@@ -127,127 +124,151 @@ function updateHighScore() {
   highScoreElement.innerText = getHighScore();
 }
 
-// render logic
-function render() {
-  let head = null;
+// game over logic
+function gameOver() {
+  // alert("Game Over!");// for testing
+  clearInterval(intervalId);
+  clearInterval(timeIntervalId);
+  saveHighScore(score); // ✅ Save score
+  updateHighScore(); // ✅ Refresh UI
+}
 
-  // food render logic
-  blocks[`${food.x}-${food.y}`].classList.add("food");
-  blocks[`${dangerousFood.x}-${dangerousFood.y}`].classList.add(
-    "dangerous-food",
+// calculate the next head position based on the current direction
+function getNextHeadPosition() {
+  const currentHead = snake[0];
+  // head directions logic
+  switch (directions) {
+    case "right":
+      return { x: currentHead.x, y: currentHead.y + 1 };
+    case "left":
+      return { x: currentHead.x, y: currentHead.y - 1 };
+    case "up":
+      return { x: currentHead.x - 1, y: currentHead.y };
+    case "down":
+      return { x: currentHead.x + 1, y: currentHead.y };
+  }
+}
+
+// collision detection logic
+function isCollision(head) {
+  const wallCollision =
+    head.x < 0 || head.x >= rows || head.y < 0 || head.y >= cols;
+
+  const selfCollision = snake.some(
+    (segment) => segment.x === head.x && segment.y === head.y,
   );
 
-  // head directions logic
-  if (directions === "right") {
-    head = { x: snake[0].x, y: snake[0].y + 1 };
-  } else if (directions === "down") {
-    head = { x: snake[0].x + 1, y: snake[0].y };
-  } else if (directions === "left") {
-    head = { x: snake[0].x, y: snake[0].y - 1 };
-  } else if (directions === "up") {
-    head = { x: snake[0].x - 1, y: snake[0].y };
-  }
+  const dangerousCollision = dangerousFoods.some(
+    (food) => food.x === head.x && food.y === head.y,
+  );
 
-  // game over logic
-  function gameOver() {
-    // alert("Game Over!");// for testing
-    clearInterval(intervalId);
-    clearInterval(timeIntervalId);
-  }
+  return wallCollision || selfCollision || dangerousCollision;
+}
 
-  // wall collision and self collision logic and dangerous food collision logic
-  if (
-    head.x < 0 ||
-    head.x >= rows ||
-    head.y < 0 ||
-    head.y >= cols ||
-    snake.some((segment) => segment.x === head.x && segment.y === head.y) || // self collision
-    (head.x === dangerousFood.x && head.y === dangerousFood.y) // dangerous food collision
-  ) {
-    gameOver();
+// food spawning logic
+function spawnFood(count, type) {
+  const foodArray = [];
 
-    modal.style.display = "flex";
-    gameStartModal.style.display = "none";
-    gameOverModal.style.display = "flex";
-    return;
-  }
-
-  // food consumption logic
-  if (head.x === food.x && head.y === food.y) {
-    blocks[`${food.x}-${food.y}`].classList.remove("food");
-    blocks[`${dangerousFood.x}-${dangerousFood.y}`].classList.remove(
-      "dangerous-food",
-    );
-
-    // ensure that the new food doesn't spawn on the snake
+  for (let i = 0; i < count; i++) {
     let newFood;
+
     do {
       newFood = {
         x: Math.floor(Math.random() * rows),
         y: Math.floor(Math.random() * cols),
       };
     } while (
-      snake.some(
-        (segment) => segment.x === newFood.x && segment.y === newFood.y,
-      )
+      snake.some((seg) => seg.x === newFood.x && seg.y === newFood.y) ||
+      foods.some((f) => f.x === newFood.x && f.y === newFood.y) ||
+      dangerousFoods.some((f) => f.x === newFood.x && f.y === newFood.y)
     );
 
-    food = newFood;
-
-    // ensure that the new dangerous food doesn't spawn on the snake or on the food
-    let newdangerousFood;
-    do {
-      newdangerousFood = {
-        x: Math.floor(Math.random() * rows),
-        y: Math.floor(Math.random() * cols),
-      };
-    } while (
-      snake.some(
-        (segment) =>
-          segment.x === newdangerousFood.x && segment.y === newdangerousFood.y,
-      ) ||
-      (newdangerousFood.x === food.x && newdangerousFood.y === food.y)
-    );
-
-    dangerousFood = newdangerousFood;
-
-    // render the new food and dangerous food
-    blocks[`${food.x}-${food.y}`].classList.add("food");
-    blocks[`${dangerousFood.x}-${dangerousFood.y}`].classList.add(
-      "dangerous-food",
-    );
-
-    snake.unshift(head);
-
-    streak += 1;
-    score += 1;
-
-    // Bonus every 10 consecutive foods
-    if (streak % 10 === 0) {
-      score += 5; // bonus points
-    }
-
-    scoreElement.innerText = score;
-
-    if (score > getHighScore()) {
-      saveHighScore(score);
-      updateHighScore();
-    }
+    foodArray.push(newFood);
   }
 
-  snake.forEach((segment) => {
-    const block = blocks[`${segment.x}-${segment.y}`];
-    block.classList.remove("snake");
+  if (type === "normal") foods = foodArray;
+  if (type === "dangerous") dangerousFoods = foodArray;
+}
+
+// move the snake by adding the new head and removing the tail
+function draw() {
+  // Clear all
+  Object.values(blocks).forEach((block) => {
+    block.classList.remove("snake", "food", "dangerous-food");
   });
 
-  snake.unshift(head);
-  snake.pop();
-
-  snake.forEach((segment) => {
-    // console.log(segment); // for testing
+  // Draw snake
+  snake.forEach((segment, index) => {
     const block = blocks[`${segment.x}-${segment.y}`];
     block.classList.add("snake");
+
+    if (index === 0) block.classList.add("snake-head");
   });
+
+  // Draw normal foods
+  foods.forEach((food) => {
+    blocks[`${food.x}-${food.y}`].classList.add("food");
+  });
+
+  // Draw dangerous foods
+  dangerousFoods.forEach((food) => {
+    blocks[`${food.x}-${food.y}`].classList.add("dangerous-food");
+  });
+}
+
+// Move Snake Function
+function moveSnake(head) {
+  snake.unshift(head);
+  snake.pop();
+}
+
+// time tracking logic
+function updateTime() {
+  let [min, sec] = time.split(":").map(Number);
+
+  if (sec === 59) {
+    min += 1;
+    sec = 0;
+  } else {
+    sec += 1;
+  }
+
+  const formattedMin = String(min).padStart(2, "0");
+  const formattedSec = String(sec).padStart(2, "0");
+
+  time = `${formattedMin}:${formattedSec}`;
+  timeElement.innerText = time;
+}
+
+// render logic
+function render() {
+  const head = getNextHeadPosition();
+
+  if (isCollision(head)) {
+    gameOver();
+    modal.style.display = "flex";
+    gameStartModal.style.display = "none";
+    gameOverModal.style.display = "flex";
+    return;
+  }
+
+  const ateFood = foods.some((food) => food.x === head.x && food.y === head.y);
+
+  if (ateFood) {
+    snake.unshift(head); // grow
+    score++;
+    scoreElement.innerText = score;
+    streak++;
+
+    if (streak % 10 === 0) score += 5;
+
+    spawnFood(foods.length, "normal");
+    spawnFood(dangerousFoods.length, "dangerous");
+  } else {
+    moveSnake(head); // normal move
+  }
+
+  draw();
 }
 
 startBtn.addEventListener("click", () => {
@@ -277,67 +298,40 @@ startBtn.addEventListener("click", () => {
 restartBtn.addEventListener("click", restartGame);
 
 function restartGame() {
-  // Clear the food and snake from the previous game
-  blocks[`${food.x}-${food.y}`].classList.remove("food");
+  clearInterval(intervalId);
+  clearInterval(timeIntervalId);
 
-  snake.forEach((segment) => {
-    const block = blocks[`${segment.x}-${segment.y}`];
-    block.classList.remove("snake");
-  });
-
-  // reset the score, time and high score if necessary
   score = 0;
   time = "00:00";
+  streak = 0;
 
   scoreElement.innerText = score;
   timeElement.innerText = time;
-  highScoreElement.innerText = highScore;
 
-  // remove the game over modal and restart the game
-  modal.style.display = "none";
   directions = "right";
+
   snake = [
     { x: 2, y: 5 },
     { x: 2, y: 4 },
     { x: 2, y: 3 },
   ];
 
-  // ensure that the new food doesn't spawn on the snake
-  do {
-    newFood = {
-      x: Math.floor(Math.random() * rows),
-      y: Math.floor(Math.random() * cols),
-    };
-  } while (
-    snake.some((segment) => segment.x === newFood.x && segment.y === newFood.y)
-  );
+  spawnFood(1, "normal");
 
-  food = newFood;
+  if (currentDifficulty === "easy") {
+    spawnFood(1, "dangerous");
+  } else if (currentDifficulty === "medium") {
+    spawnFood(2, "dangerous");
+  } else if (currentDifficulty === "hard") {
+    spawnFood(3, "dangerous");
+  }
 
-  clearInterval(intervalId);
-  intervalId = setInterval(() => {
-    render();
-  }, gameSpeed);
+  modal.style.display = "none";
 
-  // reset the time interval
-  timeIntervalId = setInterval(() => {
-    let [min, sec] = time.split(":").map(Number);
+  intervalId = setInterval(render, gameSpeed);
+  timeIntervalId = setInterval(updateTime, 1000);
 
-    if (sec === 59) {
-      min += 1;
-      sec = 0;
-    } else {
-      sec += 1;
-    }
-
-    const formattedMin = String(min).padStart(2, "0");
-    const formattedSec = String(sec).padStart(2, "0");
-
-    time = `${formattedMin}:${formattedSec}`;
-    timeElement.innerText = time;
-  }, 1000);
-
-  updateHighScore() 
+  updateHighScore();
 }
 
 // saanke direction control logic

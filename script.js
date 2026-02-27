@@ -51,7 +51,7 @@ let food = {
   y: Math.floor(Math.random() * cols),
 };
 
-let dengerousFood = {
+let dangerousFood= {
   x: Math.floor(Math.random() * rows),
   y: Math.floor(Math.random() * cols),
 };
@@ -83,6 +83,7 @@ function saveHighScore(score) {
   }
 }
 
+// difficulty settings 
 // EASY
 easyLevelBtn.addEventListener("click", () => {
   currentDifficulty = "easy";
@@ -132,8 +133,8 @@ function render() {
 
   // food render logic
   blocks[`${food.x}-${food.y}`].classList.add("food");
-  blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.add(
-    "dengerous-food",
+  blocks[`${dangerousFood.x}-${dangerousFood.y}`].classList.add(
+    "dangerous-food",
   );
 
   // head directions logic
@@ -154,14 +155,14 @@ function render() {
     clearInterval(timeIntervalId);
   }
 
-  // wall collision and self collision logic and dengerous food collision logic
+  // wall collision and self collision logic and dangerous food collision logic
   if (
     head.x < 0 ||
     head.x >= rows ||
     head.y < 0 ||
     head.y >= cols ||
-    snake.some((segment) => segment.x === head.x && segment.y === head.y) ||
-    (head.x === dengerousFood.x && head.y === dengerousFood.y)
+    snake.some((segment) => segment.x === head.x && segment.y === head.y) || // self collision
+    (head.x === dangerousFood.x && head.y === dangerousFood.y) // dangerous food collision
   ) {
     gameOver();
 
@@ -174,8 +175,8 @@ function render() {
   // food consumption logic
   if (head.x === food.x && head.y === food.y) {
     blocks[`${food.x}-${food.y}`].classList.remove("food");
-    blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.remove(
-      "dengerous-food",
+    blocks[`${dangerousFood.x}-${dangerousFood.y}`].classList.remove(
+      "dangerous-food",
     );
 
     // ensure that the new food doesn't spawn on the snake
@@ -193,27 +194,27 @@ function render() {
 
     food = newFood;
 
-    // ensure that the new dengerous food doesn't spawn on the snake or on the food
-    let newDengerousFood;
+    // ensure that the new dangerous food doesn't spawn on the snake or on the food
+    let newdangerousFood;
     do {
-      newDengerousFood = {
+      newdangerousFood = {
         x: Math.floor(Math.random() * rows),
         y: Math.floor(Math.random() * cols),
       };
     } while (
       snake.some(
         (segment) =>
-          segment.x === newDengerousFood.x && segment.y === newDengerousFood.y,
+          segment.x === newdangerousFood.x && segment.y === newdangerousFood.y,
       ) ||
-      (newDengerousFood.x === food.x && newDengerousFood.y === food.y)
+      (newdangerousFood.x === food.x && newdangerousFood.y === food.y)
     );
 
-    dengerousFood = newDengerousFood;
+    dangerousFood = newdangerousFood;
 
-    // render the new food and dengerous food
+    // render the new food and dangerous food
     blocks[`${food.x}-${food.y}`].classList.add("food");
-    blocks[`${dengerousFood.x}-${dengerousFood.y}`].classList.add(
-      "dengerous-food",
+    blocks[`${dangerousFood.x}-${dangerousFood.y}`].classList.add(
+      "dangerous-food",
     );
 
     snake.unshift(head);
@@ -343,46 +344,46 @@ function restartGame() {
 document.addEventListener("keydown", (event) => {
   // console.log(event.key); // for testing
   if (event.key === "ArrowUp" || event.key === "w" || event.key === "8") {
-    directions = "up";
+    setDirection("up");
   } else if (
     event.key === "ArrowRight" ||
     event.key === "d" ||
     event.key === "6"
   ) {
-    directions = "right";
+    setDirection("right");
   } else if (
     event.key === "ArrowDown" ||
     event.key === "s" ||
     event.key === "2"
   ) {
-    directions = "down";
+    setDirection("down");
   } else if (
     event.key === "ArrowLeft" ||
     event.key === "a" ||
     event.key === "4"
   ) {
-    directions = "left";
+    setDirection("left");
   }
 });
 
 // mobile controls logic
 btnUp.addEventListener("click", () => {
-  directions = "up";
+  setDirection("up");
   // console.log("up"); // for testing
 });
 
 btnRight.addEventListener("click", () => {
-  directions = "right";
+  setDirection("right");
   // console.log("right"); // for testing
 });
 
 btnDown.addEventListener("click", () => {
-  directions = "down";
+  setDirection("down");
   // console.log("down"); // for testing
 });
 
 btnLeft.addEventListener("click", () => {
-  directions = "left";
+  setDirection("left");
   // console.log("left"); // for testing
 });
 
@@ -404,15 +405,15 @@ document.addEventListener("touchend", (e) => {
 
   if (Math.abs(diffX) > Math.abs(diffY)) {
     if (diffX > 0) {
-      directions = "right";
+      setDirection("right");
     } else {
-      directions = "left";
+      setDirection("left");
     }
   } else {
     if (diffY > 0) {
-      directions = "down";
+      setDirection("down");
     } else {
-      directions = "up";
+      setDirection("up");
     }
   }
 });

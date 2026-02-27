@@ -19,7 +19,7 @@ body {
     --bg-head-color: #075700;
     --bg-fill-color: #39FF14;
     --bg-food-color: #ecef23;
-    --bg-dengerous-food-color: #ff0000;
+    --bg-dangerous-food-color: #ff0000;
     --bg-start-btn-color: #64e24d;
     --bg-primary-mobile-btn-color: #a7c957;
     --bg-secondary-mobile-btn-color: #01fd33;
@@ -168,8 +168,8 @@ section .infos .info {
     background-color: var(--bg-food-color);
 }
 
-.dengerous-food {
-    background-color: var(--bg-dengerous-food-color);
+.dangerous-food {
+    background-color: var(--bg-dangerous-food-color);
 }
 
 .modal {
@@ -255,7 +255,7 @@ section .infos .info {
 }
 
 .restart-btn {
-    background-color: var(--bg-dengerous-food-color);
+    background-color: var(--bg-dangerous-food-color);
 }
 
 /* Show mobile buttons on touch devices only (screen size ≤ 768px) */

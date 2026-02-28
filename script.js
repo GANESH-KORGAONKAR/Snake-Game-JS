@@ -22,6 +22,9 @@ let score = 0;
 let time = "00:00";
 let streak = 0; // tracks consecutive food eaten
 
+let bonusFoods = [];
+let lastBonusSpawnScore = 0; // prevents duplicate spawn at same milestone
+
 const blocks = {};
 let directions = "right"; // initial direction of the snake
 
@@ -180,7 +183,8 @@ function spawnFood(count, type) {
     } while (
       snake.some((seg) => seg.x === newFood.x && seg.y === newFood.y) ||
       foods.some((f) => f.x === newFood.x && f.y === newFood.y) ||
-      dangerousFoods.some((f) => f.x === newFood.x && f.y === newFood.y)
+      dangerousFoods.some((f) => f.x === newFood.x && f.y === newFood.y)  ||
+      bonusFoods.some((f) => f.x === newFood.x && f.y === newFood.y)
     );
 
     foodArray.push(newFood);
@@ -188,6 +192,7 @@ function spawnFood(count, type) {
 
   if (type === "normal") foods = foodArray;
   if (type === "dangerous") dangerousFoods = foodArray;
+  if (type === "bonus") bonusFoods = foodArray;
 }
 
 // move the snake by adding the new head and removing the tail
@@ -267,6 +272,12 @@ function render() {
   } else {
     moveSnake(head); // normal move
   }
+
+  // Spawn bonus food every 30 points
+if (score > 0 && score % 30 === 0 && score !== lastBonusSpawnScore) {
+  spawnFood(1, "bonus");
+  lastBonusSpawnScore = score;
+}
 
   draw();
 }

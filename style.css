@@ -20,6 +20,7 @@ body {
     --bg-fill-color: #39FF14;
     --bg-food-color: #ecef23;
     --bg-dangerous-food-color: #ff0000;
+    --bg-bonus-food-color : #ffe600;
     --bg-start-btn-color: #64e24d;
     --bg-primary-mobile-btn-color: #a7c957;
     --bg-secondary-mobile-btn-color: #01fd33;
@@ -170,6 +171,12 @@ section .infos .info {
 
 .dangerous-food {
     background-color: var(--bg-dangerous-food-color);
+}
+
+.bonus-food {
+  background-color: var(--bg-bonus-food-color);
+  border-radius: 50%;
+  box-shadow: 0 0 10px yellow;
 }
 
 .modal {

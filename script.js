@@ -81,7 +81,7 @@ function saveHighScore(score) {
 // EASY
 easyLevelBtn.addEventListener("click", () => {
   currentDifficulty = "easy";
-  gameSpeed = 300;
+  gameSpeed = 250;
   spawnFood(1, "normal");
   spawnFood(1, "dangerous");
   updateDifficultyUI();
@@ -91,7 +91,7 @@ easyLevelBtn.addEventListener("click", () => {
 // MEDIUM
 mediumLevelBtn.addEventListener("click", () => {
   currentDifficulty = "medium";
-  gameSpeed = 200;
+  gameSpeed = 180;
   spawnFood(1, "normal");
   spawnFood(2, "dangerous");
   updateDifficultyUI();
@@ -101,9 +101,9 @@ mediumLevelBtn.addEventListener("click", () => {
 // HARD
 hardLevelBtn.addEventListener("click", () => {
   currentDifficulty = "hard";
-  gameSpeed = 100;
-  spawnFood(1, "normal");
-  spawnFood(3, "dangerous");
+  gameSpeed = 110;
+  spawnFood(2, "normal");
+  spawnFood(4, "dangerous");
   updateDifficultyUI();
   updateHighScore();
 });
@@ -183,7 +183,7 @@ function spawnFood(count, type) {
     } while (
       snake.some((seg) => seg.x === newFood.x && seg.y === newFood.y) ||
       foods.some((f) => f.x === newFood.x && f.y === newFood.y) ||
-      dangerousFoods.some((f) => f.x === newFood.x && f.y === newFood.y)  ||
+      dangerousFoods.some((f) => f.x === newFood.x && f.y === newFood.y) ||
       bonusFoods.some((f) => f.x === newFood.x && f.y === newFood.y)
     );
 
@@ -199,7 +199,7 @@ function spawnFood(count, type) {
 function draw() {
   // Clear all
   Object.values(blocks).forEach((block) => {
-    block.classList.remove("snake", "food", "dangerous-food");
+    block.classList.remove("snake", "food", "dangerous-food", "bonus-food");
   });
 
   // Draw snake
@@ -218,6 +218,11 @@ function draw() {
   // Draw dangerous foods
   dangerousFoods.forEach((food) => {
     blocks[`${food.x}-${food.y}`].classList.add("dangerous-food");
+  });
+
+  // Draw bonus foods
+  bonusFoods.forEach((food) => {
+    blocks[`${food.x}-${food.y}`].classList.add("bonus-food");
   });
 }
 
@@ -262,10 +267,11 @@ function render() {
   if (ateFood) {
     snake.unshift(head); // grow
     score++;
-    scoreElement.innerText = score;
     streak++;
+    scoreElement.innerText = score;
 
     if (streak % 10 === 0) score += 5;
+    scoreElement.innerText = score;
 
     spawnFood(foods.length, "normal");
     spawnFood(dangerousFoods.length, "dangerous");
@@ -273,11 +279,25 @@ function render() {
     moveSnake(head); // normal move
   }
 
-  // Spawn bonus food every 30 points
-if (score > 0 && score % 30 === 0 && score !== lastBonusSpawnScore) {
-  spawnFood(1, "bonus");
-  lastBonusSpawnScore = score;
+  const ateBonus = bonusFoods.some(
+  (food) => food.x === head.x && food.y === head.y
+);
+
+if (ateBonus) {
+  snake.unshift(head);
+  score += 10; // bonus points
+  scoreElement.innerText = score;
+
+  bonusFoods = []; // remove bonus after eating
+  draw();
+  return;
 }
+
+  // Spawn bonus food every 30 points
+  if (score > 0 && score % 30 === 0 && score !== lastBonusSpawnScore) {
+    spawnFood(1, "bonus");
+    lastBonusSpawnScore = score;
+  }
 
   draw();
 }
@@ -334,7 +354,8 @@ function restartGame() {
   } else if (currentDifficulty === "medium") {
     spawnFood(2, "dangerous");
   } else if (currentDifficulty === "hard") {
-    spawnFood(3, "dangerous");
+    spawnFood(4, "dangerous");
+    spawnFood(2, "normal");
   }
 
   modal.style.display = "none";

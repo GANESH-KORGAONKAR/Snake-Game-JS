@@ -50,6 +50,11 @@ let snake = [
 let foods = [];
 let dangerousFoods = [];
 
+// Reload the page on window resize to recalculate board dimensions and prevent layout issues
+window.addEventListener("resize", () => {
+  location.reload();
+});
+
 // board creation logic
 for (let row = 0; row < rows; row++) {
   for (let col = 0; col < cols; col++) {
@@ -199,7 +204,13 @@ function spawnFood(count, type) {
 function draw() {
   // Clear all
   Object.values(blocks).forEach((block) => {
-    block.classList.remove("snake", "food", "dangerous-food", "bonus-food");
+    block.classList.remove(
+      "snake",
+      "snake-head",
+      "food",
+      "dangerous-food",
+      "bonus-food",
+    );
   });
 
   // Draw snake
@@ -268,7 +279,6 @@ function render() {
     snake.unshift(head); // grow
     score++;
     streak++;
-    scoreElement.innerText = score;
 
     if (streak % 10 === 0) score += 5;
     scoreElement.innerText = score;
@@ -280,18 +290,17 @@ function render() {
   }
 
   const ateBonus = bonusFoods.some(
-  (food) => food.x === head.x && food.y === head.y
-);
+    (food) => food.x === head.x && food.y === head.y,
+  );
 
-if (ateBonus) {
-  snake.unshift(head);
-  score += 10; // bonus points
-  scoreElement.innerText = score;
+  if (ateBonus) {
+    score += 10; // bonus points
+    scoreElement.innerText = score;
 
-  bonusFoods = []; // remove bonus after eating
-  draw();
-  return;
-}
+    bonusFoods = []; // remove bonus after eating
+    draw();
+    return;
+  }
 
   // Spawn bonus food every 30 points
   if (score > 0 && score % 30 === 0 && score !== lastBonusSpawnScore) {
@@ -308,22 +317,7 @@ startBtn.addEventListener("click", () => {
     render();
   }, gameSpeed);
 
-  timeIntervalId = setInterval(() => {
-    let [min, sec] = time.split(":").map(Number);
-
-    if (sec === 59) {
-      min += 1;
-      sec = 0;
-    } else {
-      sec += 1;
-    }
-
-    const formattedMin = String(min).padStart(2, "0");
-    const formattedSec = String(sec).padStart(2, "0");
-
-    time = `${formattedMin}:${formattedSec}`;
-    timeElement.innerText = time;
-  }, 1000);
+  timeIntervalId = setInterval(updateTime, 1000);
 });
 
 restartBtn.addEventListener("click", restartGame);

@@ -50,6 +50,8 @@ let snake = [
 let foods = [];
 let dangerousFoods = [];
 
+let paused = false;
+
 // Reload the page on window resize to recalculate board dimensions and prevent layout issues
 window.addEventListener("resize", () => {
   location.reload();
@@ -359,6 +361,16 @@ function restartGame() {
 
   updateHighScore();
 }
+
+// pause/resume logic for desktop
+document.addEventListener("keydown", (e) => {
+  if (e.key === "p") {
+    paused = !paused;
+
+    if (paused) clearInterval(intervalId);
+    else intervalId = setInterval(render, gameSpeed);
+  }
+});
 
 // saanke direction control logic
 document.addEventListener("keydown", (event) => {

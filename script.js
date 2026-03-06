@@ -285,6 +285,13 @@ function render() {
     if (streak % 10 === 0) score += 5;
     scoreElement.innerText = score;
 
+    // Increase speed every 30 points
+  if (score % 30 === 0 && gameSpeed > 60) {
+    clearInterval(intervalId);
+    gameSpeed -= 20;
+    intervalId = setInterval(render, gameSpeed);
+  }
+
     spawnFood(foods.length, "normal");
     spawnFood(dangerousFoods.length, "dangerous");
   } else {

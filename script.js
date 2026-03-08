@@ -12,6 +12,8 @@ const easyLevelBtn = document.querySelector(".easy");
 const mediumLevelBtn = document.querySelector(".medium");
 const hardLevelBtn = document.querySelector(".hard");
 
+const pauseGameModal = document.querySelector(".pause-game");
+
 const blockHeight = 30;
 const blockWidth = 30;
 
@@ -379,8 +381,20 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "p") {
     paused = !paused;
 
-    if (paused) clearInterval(intervalId);
-    else intervalId = setInterval(render, gameSpeed);
+    if (paused) {
+      clearInterval(intervalId);
+
+      modal.style.display = "flex";
+      pauseGameModal.style.display = "flex";
+      gameStartModal.style.display = "none";
+      gameOverModal.style.display = "none";
+    } 
+    else {
+      modal.style.display = "none";
+      pauseGameModal.style.display = "none";
+
+      intervalId = setInterval(render, gameSpeed);
+    }
   }
 });
 

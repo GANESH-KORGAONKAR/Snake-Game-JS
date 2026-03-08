@@ -201,7 +201,8 @@ to{opacity:0.5;}
 }
 
 .modal .start-game,
-.modal .game-over {
+.modal .game-over ,
+.modal .pause-game{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -227,6 +228,17 @@ to{opacity:0.5;}
 
 .start-game p {
     font-size: clamp(14px, 1.2vw, 16px);
+    color: var(--text-secondary-color);
+}
+
+.pause-game h2 {
+    font-size: clamp(24px, 3vw, 40px);
+    text-transform: uppercase;
+    color: var(--text-game-over-color);
+}
+
+.pause-game p {
+    font-size: clamp(16px, 1.5vw, 20px);
     color: var(--text-secondary-color);
 }
 

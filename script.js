@@ -99,7 +99,7 @@ easyLevelBtn.addEventListener("click", () => {
 mediumLevelBtn.addEventListener("click", () => {
   currentDifficulty = "medium";
   gameSpeed = 180;
-  spawnFood(1, "normal");
+  spawnFood(2, "normal");
   spawnFood(2, "dangerous");
   updateDifficultyUI();
   updateHighScore();
@@ -286,11 +286,11 @@ function render() {
     scoreElement.innerText = score;
 
     // Increase speed every 30 points
-  if (score % 30 === 0 && gameSpeed > 60) {
-    clearInterval(intervalId);
-    gameSpeed -= 20;
-    intervalId = setInterval(render, gameSpeed);
-  }
+    if (score % 30 === 0 && gameSpeed > 60) {
+      clearInterval(intervalId);
+      gameSpeed -= 20;
+      intervalId = setInterval(render, gameSpeed);
+    }
 
     spawnFood(foods.length, "normal");
     spawnFood(dangerousFoods.length, "dangerous");
@@ -315,6 +315,11 @@ function render() {
   if (score > 0 && score % 30 === 0 && score !== lastBonusSpawnScore) {
     spawnFood(1, "bonus");
     lastBonusSpawnScore = score;
+
+    // remove bonus food after 10 seconds
+    setTimeout(() => {
+      bonusFoods = [];
+    }, 10000);
   }
 
   draw();
@@ -350,12 +355,12 @@ function restartGame() {
     { x: 2, y: 3 },
   ];
 
-  spawnFood(1, "normal");
-
   if (currentDifficulty === "easy") {
     spawnFood(1, "dangerous");
+    spawnFood(1, "normal");
   } else if (currentDifficulty === "medium") {
     spawnFood(2, "dangerous");
+    spawnFood(2, "normal");
   } else if (currentDifficulty === "hard") {
     spawnFood(4, "dangerous");
     spawnFood(2, "normal");

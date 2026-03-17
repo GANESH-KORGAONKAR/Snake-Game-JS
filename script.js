@@ -38,8 +38,8 @@ const btnRight = document.querySelector(".right");
 let startX = 0;
 let startY = 0;
 
-let currentDifficulty = "easy"; // default difficulty
-let gameSpeed = 250; // default speed
+let currentDifficulty = null;
+let gameSpeed = null;
 let intervalId = null;
 let timeIntervalId = null;
 
@@ -53,8 +53,8 @@ let foods = [];
 let dangerousFoods = [];
 
 let paused = false;
-let gameRunning = false; //flag to track game state
-let gameState = "start"; // "start" | "running" | "paused" | "gameover"
+let gameRunning = false;
+let gameState = "start";
 
 // Reload the page on window resize to recalculate board dimensions and prevent layout issues
 window.addEventListener("resize", () => {
@@ -89,34 +89,48 @@ function saveHighScore(score) {
 }
 
 // difficulty settings
-// EASY
+const difficultyConfig = {
+  easy: {
+    speed: 250,
+    normalFood: 1,
+    dangerousFood: 1,
+  },
+  medium: {
+    speed: 180,
+    normalFood: 2,
+    dangerousFood: 2,
+  },
+  hard: {
+    speed: 110,
+    normalFood: 2,
+    dangerousFood: 4,
+  },
+};
+
+function applyDifficulty(level = "easy") {
+  currentDifficulty = level;
+
+  const config = difficultyConfig[level];
+
+  gameSpeed = config.speed;
+
+  spawnFood(config.normalFood, "normal");
+  spawnFood(config.dangerousFood, "dangerous");
+
+  updateDifficultyUI();
+  updateHighScore();
+}
+
 easyLevelBtn.addEventListener("click", () => {
-  currentDifficulty = "easy";
-  gameSpeed = 250;
-  spawnFood(1, "normal");
-  spawnFood(1, "dangerous");
-  updateDifficultyUI();
-  updateHighScore();
+  applyDifficulty("easy");
 });
 
-// MEDIUM
 mediumLevelBtn.addEventListener("click", () => {
-  currentDifficulty = "medium";
-  gameSpeed = 180;
-  spawnFood(2, "normal");
-  spawnFood(2, "dangerous");
-  updateDifficultyUI();
-  updateHighScore();
+  applyDifficulty("medium");
 });
 
-// HARD
 hardLevelBtn.addEventListener("click", () => {
-  currentDifficulty = "hard";
-  gameSpeed = 110;
-  spawnFood(2, "normal");
-  spawnFood(4, "dangerous");
-  updateDifficultyUI();
-  updateHighScore();
+  applyDifficulty("hard");
 });
 
 function updateDifficultyUI() {
@@ -340,6 +354,11 @@ function startGame() {
   gameState = "running";
   paused = false;
 
+  // default difficulty
+  if (!currentDifficulty) {
+    applyDifficulty();
+  }
+
   intervalId = setInterval(render, gameSpeed);
   timeIntervalId = setInterval(updateTime, 1000);
 }
@@ -371,16 +390,7 @@ function restartGame() {
     { x: 2, y: 3 },
   ];
 
-  if (currentDifficulty === "easy") {
-    spawnFood(1, "dangerous");
-    spawnFood(1, "normal");
-  } else if (currentDifficulty === "medium") {
-    spawnFood(2, "dangerous");
-    spawnFood(2, "normal");
-  } else if (currentDifficulty === "hard") {
-    spawnFood(4, "dangerous");
-    spawnFood(2, "normal");
-  }
+  applyDifficulty(currentDifficulty || "easy");
 
   modal.style.display = "none";
 

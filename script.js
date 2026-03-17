@@ -329,16 +329,17 @@ function render() {
   draw();
 }
 
-startBtn.addEventListener("click", () => {
+// start game function
+function startGame() {
   modal.style.display = "none";
   gameRunning = true;
+  paused = false;
 
-  intervalId = setInterval(() => {
-    render();
-  }, gameSpeed);
-
+  intervalId = setInterval(render, gameSpeed);
   timeIntervalId = setInterval(updateTime, 1000);
-});
+}
+
+startBtn.addEventListener("click", startGame);
 
 restartBtn.addEventListener("click", restartGame);
 
@@ -347,6 +348,7 @@ function restartGame() {
   clearInterval(timeIntervalId);
 
   gameRunning = true;
+  paused = false;
 
   score = 0;
   time = "00:00";
@@ -384,6 +386,25 @@ function restartGame() {
 
 // pause/resume logic for desktop
 document.addEventListener("keydown", (e) => {
+
+  if (e.key === " " || e.key === "Enter") {
+    e.preventDefault(); // prevents page scroll on space
+
+    // if game running → ignore
+    if (gameRunning) return;
+
+    //  if Game Over → restart
+    if (gameOverModal.style.display === "flex") {
+      restartGame();
+      return;
+    }
+
+    // if Start screen  → start game
+    if (getComputedStyle(gameStartModal).display === "flex") {
+  startGame();
+}
+  }
+
   if (e.key === "p") {
 
     if (!gameRunning) return;
@@ -405,6 +426,7 @@ document.addEventListener("keydown", (e) => {
       intervalId = setInterval(render, gameSpeed);
     }
   }
+
 });
 
 // saanke direction control logic

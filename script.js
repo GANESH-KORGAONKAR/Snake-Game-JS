@@ -74,13 +74,13 @@ for (let row = 0; row < rows; row++) {
 
 // high score management logic
 function getHighScore() {
-  const key = `snake_highscore_${currentDifficulty}`;
+  const key = `snake_highscore_${currentDifficulty || "medium"}`;
   return Number(localStorage.getItem(key)) || 0;
 }
 
 // Save high score if current score is greater than existing high score for the current difficulty level
 function saveHighScore(score) {
-  const key = `snake_highscore_${currentDifficulty}`;
+  const key = `snake_highscore_${currentDifficulty || "medium"}`;
   const existing = Number(localStorage.getItem(key)) || 0;
 
   if (score > existing) {
@@ -310,15 +310,6 @@ function render() {
     if (streak % 10 === 0) score += 5;
     scoreElement.innerText = score;
 
-    if (score >= lastBonusSpawnScore + 30) {
-      spawnFood(1, "bonus");
-      lastBonusSpawnScore = score;
-
-      setTimeout(() => {
-        bonusFoods = [];
-      }, 10000);
-    }
-
     spawnFood(foods.length, "normal");
     spawnFood(dangerousFoods.length, "dangerous");
   } else {
@@ -337,6 +328,7 @@ function render() {
     if (gameSpeed > 60) {
       clearInterval(intervalId);
       gameSpeed -= 10;
+      // console.log(gameSpeed); // for testing
       intervalId = setInterval(render, gameSpeed);
     }
 
@@ -344,6 +336,16 @@ function render() {
     draw();
     return;
   }
+
+  
+    if (score >= lastBonusSpawnScore + 30) {
+      spawnFood(1, "bonus");
+      lastBonusSpawnScore = score;
+
+      setTimeout(() => {
+        bonusFoods = [];
+      }, 10000);
+    }
 
   draw();
 }

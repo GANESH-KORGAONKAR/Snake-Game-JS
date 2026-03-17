@@ -107,7 +107,8 @@ const difficultyConfig = {
   },
 };
 
-function applyDifficulty(level = "easy") {
+// Apply difficulty settings
+function applyDifficulty(level = "medium") {
   currentDifficulty = level;
 
   const config = difficultyConfig[level];
@@ -121,6 +122,7 @@ function applyDifficulty(level = "easy") {
   updateHighScore();
 }
 
+// difficulty buttons
 easyLevelBtn.addEventListener("click", () => {
   applyDifficulty("easy");
 });
@@ -133,6 +135,7 @@ hardLevelBtn.addEventListener("click", () => {
   applyDifficulty("hard");
 });
 
+// update difficulty UI
 function updateDifficultyUI() {
   easyLevelBtn.style.backgroundColor =
     currentDifficulty === "easy"
@@ -307,11 +310,13 @@ function render() {
     if (streak % 10 === 0) score += 5;
     scoreElement.innerText = score;
 
-    // Increase speed every 30 points
-    if (score % 30 === 0 && gameSpeed > 60) {
-      clearInterval(intervalId);
-      gameSpeed -= 20;
-      intervalId = setInterval(render, gameSpeed);
+    if (score >= lastBonusSpawnScore + 30) {
+      spawnFood(1, "bonus");
+      lastBonusSpawnScore = score;
+
+      setTimeout(() => {
+        bonusFoods = [];
+      }, 10000);
     }
 
     spawnFood(foods.length, "normal");
@@ -324,24 +329,20 @@ function render() {
     (food) => food.x === head.x && food.y === head.y,
   );
 
+  // bonus logic
   if (ateBonus) {
-    score += 10; // bonus points
+    score += 10;
     scoreElement.innerText = score;
 
-    bonusFoods = []; // remove bonus after eating
+    if (gameSpeed > 60) {
+      clearInterval(intervalId);
+      gameSpeed -= 10;
+      intervalId = setInterval(render, gameSpeed);
+    }
+
+    bonusFoods = [];
     draw();
     return;
-  }
-
-  // Spawn bonus food every 30 points
-  if (score > 0 && score % 30 === 0 && score !== lastBonusSpawnScore) {
-    spawnFood(1, "bonus");
-    lastBonusSpawnScore = score;
-
-    // remove bonus food after 10 seconds
-    setTimeout(() => {
-      bonusFoods = [];
-    }, 10000);
   }
 
   draw();

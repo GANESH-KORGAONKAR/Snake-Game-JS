@@ -267,7 +267,8 @@ to{opacity:0.5;}
     background-color: var(--bg-start-btn-color);
 }
 
-.modal .game-over {
+.modal .game-over ,
+.modal .pause-game {
     display: none;
 }
 

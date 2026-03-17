@@ -53,6 +53,7 @@ let foods = [];
 let dangerousFoods = [];
 
 let paused = false;
+let gameRunning = false; //flag to track game state
 
 // Reload the page on window resize to recalculate board dimensions and prevent layout issues
 window.addEventListener("resize", () => {
@@ -141,6 +142,7 @@ function gameOver() {
   // alert("Game Over!");// for testing
   clearInterval(intervalId);
   clearInterval(timeIntervalId);
+  gameRunning = false; 
   saveHighScore(score); // ✅ Save score
   updateHighScore(); // ✅ Refresh UI
 }
@@ -329,6 +331,8 @@ function render() {
 
 startBtn.addEventListener("click", () => {
   modal.style.display = "none";
+  gameRunning = true;
+
   intervalId = setInterval(() => {
     render();
   }, gameSpeed);
@@ -341,6 +345,8 @@ restartBtn.addEventListener("click", restartGame);
 function restartGame() {
   clearInterval(intervalId);
   clearInterval(timeIntervalId);
+
+  gameRunning = true;
 
   score = 0;
   time = "00:00";
@@ -379,6 +385,9 @@ function restartGame() {
 // pause/resume logic for desktop
 document.addEventListener("keydown", (e) => {
   if (e.key === "p") {
+
+    if (!gameRunning) return;
+
     paused = !paused;
 
     if (paused) {

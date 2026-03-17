@@ -38,8 +38,8 @@ const btnRight = document.querySelector(".right");
 let startX = 0;
 let startY = 0;
 
-let currentDifficulty = "easy";
-let gameSpeed = 300; // default easy speed
+let currentDifficulty = "easy"; // default difficulty
+let gameSpeed = 250; // default speed
 let intervalId = null;
 let timeIntervalId = null;
 
@@ -54,6 +54,7 @@ let dangerousFoods = [];
 
 let paused = false;
 let gameRunning = false; //flag to track game state
+let gameState = "start"; // "start" | "running" | "paused" | "gameover"
 
 // Reload the page on window resize to recalculate board dimensions and prevent layout issues
 window.addEventListener("resize", () => {
@@ -142,7 +143,10 @@ function gameOver() {
   // alert("Game Over!");// for testing
   clearInterval(intervalId);
   clearInterval(timeIntervalId);
-  gameRunning = false; 
+
+  gameRunning = false;
+  gameState = "gameover";
+
   saveHighScore(score); // ✅ Save score
   updateHighScore(); // ✅ Refresh UI
 }
@@ -333,14 +337,15 @@ function render() {
 function startGame() {
   modal.style.display = "none";
   gameRunning = true;
+  gameState = "running";
   paused = false;
 
   intervalId = setInterval(render, gameSpeed);
   timeIntervalId = setInterval(updateTime, 1000);
 }
 
+// start and restart game
 startBtn.addEventListener("click", startGame);
-
 restartBtn.addEventListener("click", restartGame);
 
 function restartGame() {
@@ -348,6 +353,7 @@ function restartGame() {
   clearInterval(timeIntervalId);
 
   gameRunning = true;
+  gameState = "running";
   paused = false;
 
   score = 0;
@@ -384,29 +390,21 @@ function restartGame() {
   updateHighScore();
 }
 
-// pause/resume logic for desktop
+// keyboard controls for pause , start and restart
 document.addEventListener("keydown", (e) => {
-
   if (e.key === " " || e.key === "Enter") {
     e.preventDefault(); // prevents page scroll on space
 
-    // if game running → ignore
-    if (gameRunning) return;
+    if (gameState === "running") return; // if game running → ignore
 
-    //  if Game Over → restart
-    if (gameOverModal.style.display === "flex") {
+    if (gameState === "start") {
+      startGame();
+    } else if (gameState === "gameover") {
       restartGame();
-      return;
     }
-
-    // if Start screen  → start game
-    if (getComputedStyle(gameStartModal).display === "flex") {
-  startGame();
-}
   }
 
   if (e.key === "p") {
-
     if (!gameRunning) return;
 
     paused = !paused;
@@ -418,15 +416,13 @@ document.addEventListener("keydown", (e) => {
       pauseGameModal.style.display = "flex";
       gameStartModal.style.display = "none";
       gameOverModal.style.display = "none";
-    } 
-    else {
+    } else {
       modal.style.display = "none";
       pauseGameModal.style.display = "none";
 
       intervalId = setInterval(render, gameSpeed);
     }
   }
-
 });
 
 // saanke direction control logic

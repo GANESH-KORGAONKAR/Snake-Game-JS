@@ -288,6 +288,12 @@ function updateTime() {
   timeElement.innerText = time;
 }
 
+// reset game loop
+function resetGameLoop() {
+  clearInterval(intervalId);
+  intervalId = setInterval(render, gameSpeed);
+}
+
 // render logic
 function render() {
   const head = getNextHeadPosition();
@@ -326,10 +332,8 @@ function render() {
     scoreElement.innerText = score;
 
     if (gameSpeed > 60) {
-      clearInterval(intervalId);
       gameSpeed -= 10;
-      // console.log(gameSpeed); // for testing
-      intervalId = setInterval(render, gameSpeed);
+      resetGameLoop();
     }
 
     bonusFoods = [];
@@ -337,17 +341,18 @@ function render() {
     return;
   }
 
-  
-    if (score >= lastBonusSpawnScore + 30) {
-      spawnFood(1, "bonus");
-      lastBonusSpawnScore = score;
+  if (score > 0 && score % 30 === 0 && score !== lastBonusSpawnScore) {
+    spawnFood(1, "bonus");
+    lastBonusSpawnScore = score;
 
-      setTimeout(() => {
-        bonusFoods = [];
-      }, 10000);
-    }
+    setTimeout(() => {
+      bonusFoods = [];
+    }, 10000);
+  }
 
   draw();
+
+  directions = nextDirection;
 }
 
 // start game function
@@ -392,6 +397,11 @@ function restartGame() {
     { x: 2, y: 4 },
     { x: 2, y: 3 },
   ];
+
+  foods = [];
+  dangerousFoods = [];
+  bonusFoods = [];
+  lastBonusSpawnScore = 0;
 
   applyDifficulty(currentDifficulty || "easy");
 
@@ -516,11 +526,14 @@ document.addEventListener("touchend", (e) => {
   }
 });
 
+// direction logic
+let nextDirection = "right";
+
 function setDirection(newDirection) {
   if (directions === "up" && newDirection === "down") return;
   if (directions === "down" && newDirection === "up") return;
   if (directions === "left" && newDirection === "right") return;
   if (directions === "right" && newDirection === "left") return;
 
-  directions = newDirection;
+  nextDirection = newDirection;
 }

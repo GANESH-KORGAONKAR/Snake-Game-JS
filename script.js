@@ -56,6 +56,11 @@ let paused = false;
 let gameRunning = false;
 let gameState = "start";
 
+let startEffect = new Audio ("/Sounds/effects/startEffect.wav");
+let eatEffect = new Audio ("/Sounds/effects/eatEffect.mp3");
+let gameOverEffect = new Audio ("/Sounds/effects/gameOverEffect.mp3");
+let bonusEffect = new Audio ("/Sounds/effects/bonusEffect.wav");
+
 // Reload the page on window resize to recalculate board dimensions and prevent layout issues
 window.addEventListener("resize", () => {
   location.reload();
@@ -299,6 +304,7 @@ function render() {
   const head = getNextHeadPosition();
 
   if (isCollision(head)) {
+    gameOverEffect.play();
     gameOver();
     modal.style.display = "flex";
     gameStartModal.style.display = "none";
@@ -312,6 +318,7 @@ function render() {
     snake.unshift(head); // grow
     score++;
     streak++;
+    eatEffect.play();
 
     if (streak % 10 === 0) score += 5;
     scoreElement.innerText = score;
@@ -328,6 +335,7 @@ function render() {
 
   // bonus logic
   if (ateBonus) {
+    bonusEffect.play();
     score += 10;
     scoreElement.innerText = score;
 
@@ -372,8 +380,17 @@ function startGame() {
 }
 
 // start and restart game
-startBtn.addEventListener("click", startGame);
-restartBtn.addEventListener("click", restartGame);
+// startBtn.addEventListener("click", startGame);
+startBtn.addEventListener("click", () => {
+  startEffect.play();
+  startGame();
+});
+
+// restartBtn.addEventListener("click", restartGame);
+restartBtn.addEventListener("click", () => {
+  startEffect.play();
+  restartGame();
+});
 
 function restartGame() {
   clearInterval(intervalId);
@@ -390,7 +407,8 @@ function restartGame() {
   scoreElement.innerText = score;
   timeElement.innerText = time;
 
-  directions = "right";
+  // directions = "right";
+  nextDirection = "right";
 
   snake = [
     { x: 2, y: 5 },
